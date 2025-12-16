@@ -37,14 +37,21 @@ function addMessage(sender, text) {
 
     chatMessages.appendChild(msgDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    return msgDiv; // returnăm div-ul pentru popup bani
 }
+
 
 // Trimite mesaj la Enter
 chatInput.addEventListener('keypress', async function(e){
     if(e.key === 'Enter' && chatInput.value.trim() !== '') {
         const message = chatInput.value.trim();
-        addMessage('Tu', message);
+        const userMsgDiv = addMessage('Tu', message);
         chatInput.value = '';
+
+        // Exemplu: user primește 5 bani
+        showCoinPopup(5, userMsgDiv);
+
 
         const tempId = 'temp-' + Date.now();
         const tempDiv = document.createElement('div');
@@ -63,6 +70,10 @@ chatInput.addEventListener('keypress', async function(e){
 
             const data = await response.json();
             tempDiv.textContent = data.reply;
+            if (data.bonusReceivedNow === true) {
+                showPointsAnimation(5);
+                updateNavbarPoints(data.points);
+            }
         } catch (err) {
             tempDiv.textContent = 'Îmi pare rău, a apărut o eroare.';
             console.error(err);
